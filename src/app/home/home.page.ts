@@ -45,10 +45,11 @@ export class HomePage {
   ];
   public listaFiltrada = [];
 
-  public listaPokemonApi;
+  public listaPokemonApi = [];
   public totalPokemons;
   public offset = 0;
   public limit = 10;
+  public paginaAtual = 0;
 
   constructor(
     public dadosService: DadosService,
@@ -60,13 +61,33 @@ export class HomePage {
   }
 
   public buscarPokemons(offset, limit) {
+
+    if (this.offset <= offset) {
+      this.paginaAtual++;            
+    } else {
+      this.paginaAtual--;      
+    }
+    // Atualiza o offset geral
+    this.offset = offset;
+
     this.pokeApi.buscaPokemons(offset, limit).subscribe(dados => {
-      console.log(dados);
+      // Limpa a lista para exibir os próximos pokemons buscados.
+      this.listaPokemonApi = [];
 
       // Pega somente o total de pokemons
       this.totalPokemons = dados['count'];
-      // Pega somente a lista de pokemons
-      this.listaPokemonApi = dados['results'];
+      // Pega somente a lista de pokemons da api
+      let listaApi = dados['results'];
+
+      // Percorre a lista e busca na Api todos os dados do pokemon
+      for (let item of listaApi) {
+        this.pokeApi.buscaPokemonUrl(item.url).subscribe(dado => {
+          // Adiciona os dados do pokemon ao final da lista
+          this.listaPokemonApi.push(dado);
+        });
+      }
+      // Atualiza a listaFiltrada com os pokemons buscados.
+      this.resetarLista();
     })
   }
 
@@ -81,7 +102,9 @@ export class HomePage {
   }
 
   private resetarLista() {
-    this.listaFiltrada = this.listaPokemons;
+    // this.listaFiltrada = this.listaPokemons;
+
+    this.listaFiltrada = this.listaPokemonApi;
   }
 
   public buscarPokemon(evento: any) {

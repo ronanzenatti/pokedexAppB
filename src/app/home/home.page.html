@@ -7,28 +7,28 @@
 </ion-header>
 
 <ion-content color="dark">
-  <ion-searchbar placeholder="Buscar Pokemon" color="medium" 
-  (ionChange)="buscarPokemon($event)">
+  <ion-searchbar placeholder="Buscar Pokemon" color="medium" (ionChange)="buscarPokemon($event)">
   </ion-searchbar>
 
   <ion-item-sliding *ngFor="let pokemon of listaFiltrada">
     <ion-item color="dark" (click)="abrirDadosPokemon(pokemon)">
 
       <ion-chip color="light" slot="start">
-        <ion-label [color]="pokemon.tipos[0] | lowercase">{{pokemon.numero}}</ion-label>
+        <ion-label [color]="pokemon.types[0].type.name | lowercase">{{pokemon.order}}</ion-label>
       </ion-chip>
 
       <ion-label>
         <div>
-          <h2>{{pokemon.nome}}</h2>
+          <h2>{{pokemon.name}}</h2>
 
-          <ion-badge [color]="tipo | lowercase" *ngFor="let tipo of pokemon.tipos">{{tipo}}</ion-badge>
+          <ion-badge [color]="tipo.type.name | lowercase" *ngFor="let tipo of pokemon.types">{{tipo.type.name}}
+          </ion-badge>
 
         </div>
       </ion-label>
 
       <ion-thumbnail slot="end">
-        <img [src]="pokemon.img">
+        <img [src]="pokemon.sprites.front_default">
       </ion-thumbnail>
 
     </ion-item>
@@ -38,6 +38,26 @@
       </ion-item-option>
     </ion-item-options>
   </ion-item-sliding>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="tertiary" (click)="buscarPokemons(offset - limit, limit)">
+          <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <div style="color: white">
+          Página {{paginaAtual}} de {{(totalPokemons / limit).toFixed(0)}}
+        </div>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" color="tertiary" (click)="buscarPokemons(offset + limit, limit)">
+          <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 
 </ion-content>
